@@ -3,7 +3,7 @@ use std::fs::File;
 // use std::io::{BufReader, BufWriter};
 use std::result::Result;
 
-use crate::storage::page::*;
+use crate::storage::page::Page;
 use crate::utils::PageID;
 
 struct DiskManager {
@@ -43,7 +43,7 @@ impl DiskManager {
         })
     }
 
-    // pub fn write_page(page_id: PageID) -> Result<(), Box<dyn error::Error>> { }
+    // pub fn write_page(&self, page_id: PageID) -> Result<(), Box<dyn error::Error>> {}
 
-    // pub fn fetch_page(page_id: PageID) -> Result<Page, Box<dyn error::Error>> {}
+    pub fn fetch_page(&self, page_id: PageID) -> Result<Page, Box<dyn error::Error>> {}
 }
