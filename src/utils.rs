@@ -1,8 +1,9 @@
+use std::error;
 pub const PAGE_SIZE: usize = 4096;
 
-pub const INVALID_PAGE_ID: i32 = -1;
+pub type Result<T> = std::result::Result<T, Box<dyn error::Error>>;
 
 pub enum PageID {
-    ID(i32),
+    ID(u32),
     INVALID,
 }
