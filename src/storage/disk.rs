@@ -35,6 +35,7 @@ impl DiskManager {
             pin_count: 0,
             page_id: page_id,
         });
+
         match &page.page_id {
             PageID::ID(pid) => {
                 self.file
