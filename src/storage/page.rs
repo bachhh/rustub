@@ -1,5 +1,9 @@
-use crate::utils::PageID;
-use crate::utils::PAGE_SIZE;
+pub const PAGE_SIZE: usize = 4096;
+
+pub enum PageID {
+    ID(u32),
+    INVALID,
+}
 
 pub struct Page {
     pub data: [u8; PAGE_SIZE],

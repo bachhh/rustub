@@ -1,9 +1,9 @@
 use std::fs::File;
-use std::io::{Read, Seek, SeekFrom};
+use std::io::{Read, Seek, SeekFrom, Write};
 // use std::io::{BufReader, BufWriter};
 
-use crate::storage::page::Page;
-use crate::utils::{PageID, Result, PAGE_SIZE};
+use crate::storage::page::{Page, PageID, PAGE_SIZE};
+use crate::utils::Result;
 
 struct DiskManager {
     // file_name_: String,
@@ -28,28 +28,31 @@ impl DiskManager {
         })
     }
 
-    pub fn fetch_page(&mut self, page_id: PageID) -> Result<Box<Page>> {
+    pub fn fetch_page(&mut self, page_id: u32) -> Result<Box<Page>> {
         let mut page = Box::new(Page {
             data: [0; PAGE_SIZE],
             is_dirty: false,
             pin_count: 0,
-            page_id: page_id,
+            page_id: PageID::ID(page_id),
         });
 
-        match &page.page_id {
+        self.file
+            .seek(SeekFrom::Start((page_id as u64) * (PAGE_SIZE as u64)))?;
+        self.file.read_exact(&mut page.data)?;
+        // write
+        Ok(page)
+    }
+
+    pub fn write_page(&mut self, page: &Box<Page>) -> Result<()> {
+        match page.page_id {
             PageID::ID(pid) => {
+                // TODO:
                 self.file
-                    .seek(SeekFrom::Start((*pid as u64) * (PAGE_SIZE as u64)))?;
-                self.file.read_exact(&mut page.data)?;
-                // write
-                Ok(page)
+                    .seek(SeekFrom::Start((pid as u64) * (PAGE_SIZE as u64)))?;
+                self.file.write(&page.data)?;
+                Ok(())
             }
             PageID::INVALID => Err("invalid page id")?,
         }
     }
-
-    // pub fn write_page(&self, page: &Box<Page>) -> Result<()> {
-    //     // TODO:
-    //     Ok(())
-    // }
 }
