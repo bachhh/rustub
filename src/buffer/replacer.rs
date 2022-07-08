@@ -1,4 +1,4 @@
-use std::collections::{ LinkedList, HashMap};
+use std::collections::{HashMap, LinkedList};
 
 pub trait Replacer {
     // replace return the next frame_id to be replaced. If no frames are eligible for replacement,
@@ -17,19 +17,16 @@ pub trait Replacer {
     fn size() -> usize;
 }
 
-// LRUReplacer implements the Least Recently Used cache replacement strategy
-// as a Replacer trait
-pub struct LRUReplacer {
-    list: LinkedList,
-    map: HashMap,
+// SLRU implement double segmented-LRU cache policy for our replacer, instead of the
+// canon LRU cache in the
+pub struct SLRU {
+    probation: u32,
+    protected: u32,
 }
 
-impl Replacer for LRUReplacer {
-    fn replace(&mut self) -> Option<u32>;
-
-    fn pin(&mut self, frame_id: u32);
-
-    fn unpin(&mut self, frame_id: u32);
-
-    fn size(&self) -> usize;
+impl Replacer for SLRU {
+    fn replace() -> Option<u32>;
+    fn pin(frame_id: u32);
+    fn unpin(frame_id: u32);
+    fn size() -> usize;
 }
