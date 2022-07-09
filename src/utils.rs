@@ -10,13 +10,23 @@ pub type Result<T> = std::result::Result<T, Box<dyn error::Error>>;
 pub struct HashLinkedMap<T> {
     hash_map: HashMap<T, u32>,
     list: Vec<T>,
-    head: u32,
-    tail: u32,
-    length: u32,
-    capacity: u32,
+    head: usize,
+    tail: usize,
+    length: usize,
+    capacity: usize,
 }
+
 impl<T> HashLinkedMap<T> {
-    pub fn push(&mut self, entry: T) {}
+    pub fn push(&mut self, entry: T) {
+        if (self.length > 0 && self.tail == self.head) {
+            if self.length == self.capacity {
+                self.expand();
+            }
+        }
+        self.list[self.tail] = entry;
+        self.tail = self.tail + 1 % self.capacity;
+        self.length += 1;
+    }
 
     // pack is called when the density ( length / capacity ) went below certain level.
     // then the entire array is repacked by shifting all elements close together.
