@@ -21,6 +21,8 @@ impl<T> HashLinkedMap<T> {
         if (self.length > 0 && self.tail == self.head) {
             if self.length == self.capacity {
                 self.expand();
+            } else {
+                self.pack();
             }
         }
         self.list[self.tail] = entry;
