@@ -10,14 +10,22 @@ pub type Result<T> = std::result::Result<T, Box<dyn error::Error>>;
 pub struct HashLinkedMap {
     hash_map: HashMap<u32, usize>,
     list: Vec<Option<u32>>,
+    // call to pop() will return list[head]
     head: usize,
+    // call to push() will put element into list[tail]
     tail: usize,
+    // tail >= (head + length) % capacity,
+    // if array is densely packed, tail == head + length
+    // if array is empty, head == tail
     length: usize,
 }
 
 const MIN_DENSITY: f64 = 0.5;
 
 impl HashLinkedMap {
+    // push() push entry value into list[tail],
+    // if head == tail but 0 < length < capacity, pack the array to eliminate gaps
+    // if length overflow capacity, will allocate bigger array and copy elements over
     pub fn push(&mut self, entry: u32) {
         if self.length > 0 && self.tail == self.head {
             if self.length == self.capacity() {
@@ -26,43 +34,45 @@ impl HashLinkedMap {
                 self.pack();
             }
         }
-        self.tail = self.tail + 1 % self.capacity();
         self.hash_map.insert(entry.clone(), self.tail);
         self.list[self.tail] = Some(entry);
+        self.tail = self.tail + 1 % self.capacity();
         self.length += 1;
     }
 
     pub fn pop(&mut self) -> Option<u32> {
-        if self.length > 0 {
-            let ret = if let Some(ret) = self.list[self.head] {
-                ret
-            } else {
-                todo!()
-            };
-            self.list[self.head] = None;
-
-            self.head = (self.head + 1) % self.capacity();
-            while let None = self.list[self.head] {
-                self.head = (self.head + 1) % self.capacity();
-            }
-
-            if (self.length as f64) < self.capacity() as f64 * MIN_DENSITY {
-                self.pack();
-            }
-            self.hash_map.remove(&ret);
-            self.length -= 1;
-            return Some(ret);
+        if self.length == 0 {
+            return None;
         }
-        None
+
+        let ret: u32 = match self.list[self.head] {
+            Some(r) => r,
+            None => todo!(),
+        };
+
+        // TODO: advance self.head until either self.head == self.tail or self.head is not None
+        // self.list[self.head] = None;
+        // while let None = self.list[self.head] {
+        //     self.head = (self.head + 1) % self.capacity();
+        // }
+        self.hash_map.remove(&ret);
+        self.length -= 1;
+
+        if (self.length as f64) < self.capacity() as f64 * MIN_DENSITY {
+            self.pack();
+        }
+        return Some(ret);
     }
 
-    pub fn remove(&mut self, entry: u32) {
+    // remove a node in O(1) using key, this can left gaps in the array
+    // return the entry removed, or None if entry is not available in list
+    pub fn remove(&mut self, entry: u32) -> Option<u32> {
         if let Some(index) = self.hash_map.remove(&entry) {
             self.list[index] = None;
             self.length -= 1;
-        } else {
-            todo!();
+            return Some(entry);
         }
+        None
     }
 
     fn capacity(&self) -> usize {
