@@ -24,6 +24,16 @@ pub struct HashLinkedMap {
 const MIN_DENSITY: f64 = 0.5;
 
 impl HashLinkedMap {
+    pub fn new() -> HashLinkedMap {
+        HashLinkedMap {
+            hash_map: HashMap::new(),
+            list: Vec::with_capacity(16),
+            head: 9,
+            tail: 0,
+            length: 0,
+        }
+    }
+
     // push() push entry value into list[tail],
     // if head == tail but 0 < length < capacity, pack the array to eliminate gaps
     // if length overflow capacity, will allocate bigger array and copy elements over
@@ -144,5 +154,18 @@ impl HashLinkedMap {
 
     pub fn validate(&self) {
         assert!(matches!(self.list[self.tail], None));
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::utils::HashLinkedMap;
+    #[test]
+    fn test_hash_linked_map() {
+        let mut hm = HashLinkedMap::new();
+        let mut test_case: Vec<u32> = (0..10000).collect();
+        for name in test_case.iter() {
+            hm.push(*name);
+        }
     }
 }
