@@ -1,5 +1,6 @@
 use std::collections::HashMap;
 use std::error;
+use std::matches;
 
 pub type Result<T> = std::result::Result<T, Box<dyn error::Error>>;
 
@@ -50,11 +51,17 @@ impl HashLinkedMap {
             None => todo!(),
         };
 
-        // TODO: advance self.head until either self.head == self.tail or self.head is not None
-        // self.list[self.head] = None;
-        // while let None = self.list[self.head] {
-        //     self.head = (self.head + 1) % self.capacity();
-        // }
+        // advance self.head until either self.head == self.tail or self.head is not None
+        self.list[self.head] = None;
+        loop {
+            self.head = (self.head + 1) % self.capacity();
+            if let Some(_) = self.list[self.head] {
+                break;
+            }
+            if self.head == self.tail {
+                break;
+            }
+        }
         self.hash_map.remove(&ret);
         self.length -= 1;
 
@@ -133,5 +140,9 @@ impl HashLinkedMap {
                 self.list.swap(self.tail, i); // list[i] is now None
             }
         }
+    }
+
+    pub fn validate(&self) {
+        assert!(matches!(self.list[self.tail], None));
     }
 }
