@@ -39,7 +39,7 @@ fn bench(c: &mut Criterion) {
         group.bench_function(&format!("array {}-25", x).to_string(), move |b| {
             b.iter_batched(
                 || {
-                    let mut v25: Vec<i64> = vec![0; (x * 2) as usize];
+                    let mut v25: Vec<i64> = vec![0; (x * 4) as usize];
                     for (i, v) in v25.iter_mut().enumerate() {
                         if i % 4 == 0 {
                             *v = i as i64;
@@ -52,37 +52,37 @@ fn bench(c: &mut Criterion) {
             );
         });
 
-        //         group.bench_function(&format!("array {}-50", x).to_string(), move |b| {
-        //             b.iter_batched(
-        //                 || {
-        //                     let mut v50: Vec<i64> = vec![0; (x * 2) as usize];
-        //                     for (i, v) in v50.iter_mut().enumerate() {
-        //                         if i % 2 != 0 {
-        //                             *v = i as i64;
-        //                         }
-        //                     }
-        //                     v50
-        //                 },
-        //                 increment_vec,
-        //                 BatchSize::SmallInput,
-        //             );
-        //         });
+        group.bench_function(&format!("array {}-50", x).to_string(), move |b| {
+            b.iter_batched(
+                || {
+                    let mut v50: Vec<i64> = vec![0; (x * 2) as usize];
+                    for (i, v) in v50.iter_mut().enumerate() {
+                        if i % 2 != 0 {
+                            *v = i as i64;
+                        }
+                    }
+                    v50
+                },
+                increment_vec,
+                BatchSize::SmallInput,
+            );
+        });
 
-        //         group.bench_function(&format!("array {}-75", x).to_string(), move |b| {
-        //             b.iter_batched(
-        //                 || {
-        //                     let mut v75: Vec<i64> = vec![0; (x * 2) as usize];
-        //                     for (i, v) in v75.iter_mut().enumerate() {
-        //                         if i % 4 != 0 {
-        //                             *v = i as i64;
-        //                         }
-        //                     }
-        //                     v75
-        //                 },
-        //                 increment_vec,
-        //                 BatchSize::SmallInput,
-        //             );
-        //         });
+        group.bench_function(&format!("array {}-75", x).to_string(), move |b| {
+            b.iter_batched(
+                || {
+                    let mut v75: Vec<i64> = vec![0; ((x * 3) / 2) as usize];
+                    for (i, v) in v75.iter_mut().enumerate() {
+                        if i % 4 != 0 {
+                            *v = i as i64;
+                        }
+                    }
+                    v75
+                },
+                increment_vec,
+                BatchSize::SmallInput,
+            );
+        });
     }
 }
 
