@@ -18,7 +18,7 @@ fn bench(c: &mut Criterion) {
     // test param = array & linkedlist of increasingly larger size, for array we will consider
     // 4 density factors: 25% 50% 75% 100%
     // test case involve exponentials of 2 up to 2^10
-    let mut group = c.benchmark_group("My Group");
+    let mut group = c.benchmark_group("becnh_read");
     for exp in 1..17 {
         let x = 1 << exp;
 
@@ -82,6 +82,27 @@ fn bench(c: &mut Criterion) {
                 increment_vec,
                 BatchSize::SmallInput,
             );
+        });
+    }
+
+    for exp in 1..17 {
+        let x = 1 << exp;
+        group.bench_function(&format!("insert llist {}", x).to_string(), move |b| {
+            b.iter(|| {
+                let mut list = LinkedList::<i64>::new();
+                for i in 1..x {
+                    list.push_back(i);
+                }
+            });
+        });
+
+        group.bench_function(&format!("insert array {}", x).to_string(), move |b| {
+            b.iter(|| {
+                let mut v: Vec<i64> = vec![0; 1];
+                for i in 1..x {
+                    v.push(i);
+                }
+            });
         });
     }
 }
